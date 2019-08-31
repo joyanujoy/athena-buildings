@@ -10,11 +10,16 @@ from models.utils import AthenaWaiter, download_file_from_s3
 
 class BuildingsGenerator(object):
 
-    def __init__(self, min_x, max_x, min_y, max_y, bucket, folder):
+    def __init__(self, min_x, max_x, min_y, max_y, bucket, folder,
+                 query_id=None):
+        """
+        if query_id is given, we expect postprocessing the output only.
+        """
         self.min_x, self.max_x = min_x, max_x
         self.min_y, self.max_y = min_y, max_y
         self.bucket = bucket
         self.folder = folder
+        self.query_id = query_id
 
     def get_query_string(self):
         return "WITH nodes_in_bbox AS( "\
@@ -42,7 +47,8 @@ class BuildingsGenerator(object):
                 "   COALESCE(r.id, w.id) AS building_id, "\
                 "   n.lon, n.lat, "\
                 "   node_position, "\
-                "   COALESCE(r.tags['name'], w.tags['name']) AS name "\
+                "   COALESCE(r.tags['name'], w.tags['name']) AS name, "\
+                "   COALESCE(r.tags['building'], w.tags['building']) AS amenity "\
                 "FROM ways w "\
                 "CROSS JOIN UNNEST(w.nds) "\
                 "WITH ORDINALITY AS t (nd, node_position) "\
@@ -98,20 +104,37 @@ class BuildingsGenerator(object):
 
     def generate(self):
         all_buildings = gpd.GeoDataFrame()
-        query_id = self.get_query_id()
-        results = self.get_results_df(query_id)
+
+        if not self.query_id:
+            self.query_id = self.get_query_id()
+
+        results = self.get_results_df(self.query_id)
         ways = results.groupby(by=['building_id', 'way_id'])
+
+        amenity_types = ['civic', 'college', 'commercial', 'hospital',
+                         'industrial', 'office', 'public', 'retail',
+                         'train_station', 'transportation', 'university']
+
         for _, way in ways:
             polygon = self.create_polygon(way)
             if polygon:
                 metadata = way.iloc[0]
+                if metadata['amenity'] in amenity_types:
+                    fill_color = '#beaed4'
+                else:
+                    fill_color = '#D4AF37'
+
                 building_gdf = gpd.GeoDataFrame(
                     [[
                         metadata['name'],
+                        metadata['amenity'],
+                        fill_color,
                         polygon
                     ]],
                     columns=[
                         'name',
+                        'amenity',
+                        'color',
                         'geometry'
                     ]
                 )

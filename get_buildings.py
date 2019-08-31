@@ -1,20 +1,23 @@
 import os
-
-from dotenv import load_dotenv
-
+import sys
 from models.buildings_generator import BuildingsGenerator
 
-load_dotenv(os.path.join(os.getcwd(), '.env'))
 
 if __name__ == '__main__':
+    try:
+        query_id = sys.argv[1]
+    except KeyError:
+        query_id = None
+
     generator = BuildingsGenerator(
-        -26.26,
-        -12.24,
-        62.48,
-        67.25,
+        -8.82,
+        1.92,
+        49.79,
+        60.94,
         os.environ['S3_BUCKET'],
-        'iceland'
+        'uk',
+        query_id=query_id
     )
     buildings = generator.generate()
-    with open('output/iceland_buildings.geojson', 'w') as file_:
+    with open('output/uk_buildings.geojson', 'w') as file_:
         file_.write(buildings)
