@@ -29,6 +29,8 @@ The class that actually gets the data is in [models/buildings_generator.py](mode
 https://github.com/mapbox/tippecanoe#installation
 
 2. Convert geojson to mbtiles
-tippecanoe -zg -o uk_buildings_amenities.mbtiles --coalesce-densest-as-needed --extend-zooms-if-still-dropping uk_buildings.geojson
+    ```bash
+       $ tippecanoe -zg -o uk_buildings_amenities.mbtiles --coalesce-densest-as-needed --extend-zooms-if-still-dropping uk_buildings.geojson
+    ```
 
 3. Upload the mbtiles to mapbox studio, style it and publish it
