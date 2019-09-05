@@ -114,15 +114,14 @@ class BuildingsGenerator(object):
         amenity_types = ['civic', 'college', 'commercial', 'hospital',
                          'industrial', 'office', 'public', 'retail',
                          'train_station', 'transportation', 'university']
-
         for _, way in ways:
+            metadata = way.iloc[0]
+            if metadata['amenity'] not in amenity_types:
+                continue
             polygon = self.create_polygon(way)
             if polygon:
                 metadata = way.iloc[0]
-                if metadata['amenity'] in amenity_types:
-                    fill_color = '#beaed4'
-                else:
-                    fill_color = '#D4AF37'
+                fill_color = '#D4AF37'
 
                 building_gdf = gpd.GeoDataFrame(
                     [[

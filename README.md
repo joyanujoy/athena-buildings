@@ -22,3 +22,13 @@ A script that queries OpenStreetMap using AWS Athena for buildings in a given bo
 ```
 This gets the buildings in Iceland and stores it into a local GeoJSON file (in `output`).
 The class that actually gets the data is in [models/buildings_generator.py](models/buildings_generator.py).
+
+##Convert geojson to Mapxbox vector tiles.
+
+1. Install Tippacanoe per
+https://github.com/mapbox/tippecanoe#installation
+
+2. Convert geojson to mbtiles
+tippecanoe -zg -o uk_buildings_amenities.mbtiles --coalesce-densest-as-needed --extend-zooms-if-still-dropping uk_buildings.geojson
+
+3. Upload the mbtiles to mapbox studio, style it and publish it

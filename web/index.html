@@ -1,0 +1,62 @@
+<html>
+	<head >
+        <!--SEO/browser meta tags-->
+        <title>UK Buildings - universities, train stations, hospital, offices, retail and other commercial buildings</title>
+
+        <meta charset="utf-8">
+        <meta name="description" content="Buildings in UK - universities, train stations, hospital, offices, retail and other commercial buildings">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--End SEO/browser meta tags-->
+
+        <!--Stylesheets-->
+        <script src='https://api.mapbox.com/mapbox-gl-js/v1.2.0/mapbox-gl.js'></script>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v1.2.0/mapbox-gl.css' rel='stylesheet' />
+        <style>
+            body { margin:0; padding:0; }
+            #map { position:absolute; top:15px; bottom:0; width:100%; }
+            .mapboxgl-popup {
+                max-width: 400px;
+                font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            }
+        </style>
+        
+        <!--End Stylesheets-->
+    </head>
+    <body>
+        
+        <div id='map'></div>
+        <div>
+            <small>Cartographix Ltd | jopy@smarthousesearch.co.uk</small>
+        </div>
+        <script>
+          mapboxgl.accessToken = 'pk.eyJ1IjoiYW51am95Y3giLCJhIjoiY2swMDhmMjNoMHN4NTNucGRhdTMxZXpldCJ9.TPUUy7H4XZOB__HVI14AJA';
+          var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/anujoycx/ck0046r9p21na1cnyjj8pg9ng'
+          });
+        
+          map.addControl(new mapboxgl.NavigationControl());
+            
+        map.on('load', function () {  
+          map.on('click', 'uk-buildings', function (e) {
+            new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(e.features[0].properties.name + ' (' + e.features[0].properties.amenity + ')')
+            .addTo(map);
+         });
+ 
+        // Change the cursor to a pointer when the mouse is over the places layer.
+        map.on('mouseenter', 'uk-buildings', function () {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+ 
+        // Change it back to a pointer when it leaves.
+        map.on('mouseleave', 'uk-buildings', function () {
+            map.getCanvas().style.cursor = '';
+        });
+       });
+
+        </script>
+        
+    </body>
+</html>
